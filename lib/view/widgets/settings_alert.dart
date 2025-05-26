@@ -12,10 +12,8 @@ class SettingsAlert extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () async {
-            print("go to settingsbbbbbbb");
             await AppSettings.openAppSettings(type: AppSettingsType.security);
-            print("return from settings");
-            Navigator.of(context).pop();
+           //Navigator.of(context).pop();
           },
           child: Text('Open Settings'),
         ),

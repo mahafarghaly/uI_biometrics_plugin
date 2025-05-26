@@ -30,7 +30,7 @@ class _BiometricWrapperState extends State<BiometricWrapper>
     with WidgetsBindingObserver {
   final biometric = BiometricAuth();
   bool _isAuthenticated = false;
-
+  bool _dialogShown = false;
   @override
   void initState() {
     super.initState();
@@ -66,9 +66,12 @@ class _BiometricWrapperState extends State<BiometricWrapper>
       sensitiveTransaction: widget.sensitiveTransaction ?? true,
       stickyAuth: widget.stickyAuth ?? true,
     );
-    if (status == BiometricStatus.biometricNotActivated) {
+    if (status == BiometricStatus.biometricNotActivated && !_dialogShown) {
+      _dialogShown = true;
       Future.delayed(Duration(milliseconds: 200), () {
-        showDialog(context: context, builder: (context) => SettingsAlert());
+        showDialog(context: context, builder: (context) => SettingsAlert()).then((_) {
+          _dialogShown = false; 
+        });
       });
     } else if (status == BiometricStatus.success) {
       _isAuthenticated = true;
