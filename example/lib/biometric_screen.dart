@@ -9,6 +9,7 @@ class BiometricsScreen extends StatelessWidget{
   Widget build(BuildContext context) {
     return BiometricWrapper(
      // userCredentials: {"name":"sara"},
+      biometricOnly: true,
       child: Center(
         child: Text('Authentication Result: UI Biometrics plugin'),
       ),

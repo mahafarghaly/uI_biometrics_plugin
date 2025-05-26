@@ -7,7 +7,6 @@ class BiometricWrapper extends StatefulWidget {
   final String? localizedReason;
   final Map<dynamic, dynamic>? userCredentials;
   final bool? biometricOnly;
-  final bool? useErrorDialogs;
   final bool? sensitiveTransaction;
   final bool? stickyAuth;
 
@@ -17,7 +16,6 @@ class BiometricWrapper extends StatefulWidget {
     this.localizedReason,
     this.userCredentials,
     this.biometricOnly,
-    this.useErrorDialogs,
     this.stickyAuth,
     this.sensitiveTransaction,
   });
@@ -62,7 +60,6 @@ class _BiometricWrapperState extends State<BiometricWrapper>
       userCredentials: widget.userCredentials,
       biometricOnly: widget.biometricOnly ?? false,
       localizedReason: widget.localizedReason,
-      useErrorDialogs: widget.useErrorDialogs ?? false,
       sensitiveTransaction: widget.sensitiveTransaction ?? true,
       stickyAuth: widget.stickyAuth ?? true,
     );
@@ -70,7 +67,7 @@ class _BiometricWrapperState extends State<BiometricWrapper>
       _dialogShown = true;
       Future.delayed(Duration(milliseconds: 200), () {
         showDialog(context: context, builder: (context) => SettingsAlert()).then((_) {
-          _dialogShown = false; 
+          _dialogShown = false;
         });
       });
     } else if (status == BiometricStatus.success) {
