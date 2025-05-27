@@ -29,6 +29,8 @@ class _BiometricWrapperState extends State<BiometricWrapper>
   final biometric = BiometricAuth();
   bool _isAuthenticated = false;
   bool _dialogShown = false;
+  late BiometricStatus biometricStatus;
+
   @override
   void initState() {
     super.initState();
@@ -48,31 +50,36 @@ class _BiometricWrapperState extends State<BiometricWrapper>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      print('App resumed, checking biometrics...');
+    if (state == AppLifecycleState.resumed &&
+        biometricStatus != BiometricStatus.userCancelBiometric) {
+      print('App resumed, biometricStatus: $biometricStatus');
       _triggerAuth();
     }
   }
 
   Future<void> _triggerAuth() async {
     if (_isAuthenticated) return;
-    final status = await biometric.authenticate(
+    biometricStatus = await biometric.authenticate(
       userCredentials: widget.userCredentials,
       biometricOnly: widget.biometricOnly ?? false,
       localizedReason: widget.localizedReason,
       sensitiveTransaction: widget.sensitiveTransaction ?? true,
       stickyAuth: widget.stickyAuth ?? true,
     );
-    if (status == BiometricStatus.biometricNotActivated && !_dialogShown) {
+    if (biometricStatus == BiometricStatus.biometricNotActivated &&
+        !_dialogShown) {
       _dialogShown = true;
       Future.delayed(Duration(milliseconds: 200), () {
-        showDialog(context: context, builder: (context) => SettingsAlert()).then((_) {
+        showDialog(
+          context: context,
+          builder: (context) => SettingsAlert(),
+        ).then((_) {
           _dialogShown = false;
         });
       });
-    } else if (status == BiometricStatus.success) {
+    } else if (biometricStatus == BiometricStatus.success) {
       _isAuthenticated = true;
-      print("✅ Authenticated successfully. $status");
+      print("✅ Authenticated successfully. $biometricStatus");
     }
   }
 
