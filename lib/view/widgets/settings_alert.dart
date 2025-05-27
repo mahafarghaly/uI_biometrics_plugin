@@ -13,7 +13,7 @@ class SettingsAlert extends StatelessWidget {
         TextButton(
           onPressed: () async {
             await AppSettings.openAppSettings(type: AppSettingsType.security);
-           //Navigator.of(context).pop();
+            Navigator.pop(context);// to dismiss alert direct after biometric pop up appear
           },
           child: Text('Open Settings'),
         ),

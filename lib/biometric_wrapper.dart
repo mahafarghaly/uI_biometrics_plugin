@@ -4,6 +4,7 @@ import 'package:ui_biometrics_plugin/view/widgets/settings_alert.dart';
 
 class BiometricWrapper extends StatefulWidget {
   final Widget child;
+  final bool triggerManually;
   final String? localizedReason;
   final Map<dynamic, dynamic>? userCredentials;
   final bool? biometricOnly;
@@ -12,6 +13,7 @@ class BiometricWrapper extends StatefulWidget {
 
   const BiometricWrapper({
     super.key,
+    this.triggerManually = false,
     required this.child,
     this.localizedReason,
     this.userCredentials,
@@ -21,10 +23,10 @@ class BiometricWrapper extends StatefulWidget {
   });
 
   @override
-  _BiometricWrapperState createState() => _BiometricWrapperState();
+  BiometricWrapperState createState() => BiometricWrapperState();
 }
 
-class _BiometricWrapperState extends State<BiometricWrapper>
+class BiometricWrapperState extends State<BiometricWrapper>
     with WidgetsBindingObserver {
   final biometric = BiometricAuth();
   bool _isAuthenticated = false;
@@ -35,11 +37,11 @@ class _BiometricWrapperState extends State<BiometricWrapper>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-
-    // Authenticate on app launch
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _triggerAuth();
-    });
+    if (!widget.triggerManually) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        triggerAuth();
+      });
+    }
   }
 
   @override
@@ -49,15 +51,14 @@ class _BiometricWrapperState extends State<BiometricWrapper>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed &&
         biometricStatus != BiometricStatus.userCancelBiometric) {
-      print('App resumed, biometricStatus: $biometricStatus');
-      _triggerAuth();
+      await triggerAuth();
     }
   }
 
-  Future<void> _triggerAuth() async {
+  Future<void> triggerAuth() async {
     if (_isAuthenticated) return;
     biometricStatus = await biometric.authenticate(
       userCredentials: widget.userCredentials,
@@ -68,6 +69,7 @@ class _BiometricWrapperState extends State<BiometricWrapper>
     );
     if (biometricStatus == BiometricStatus.biometricNotActivated &&
         !_dialogShown) {
+      if (!mounted) return;
       _dialogShown = true;
       Future.delayed(Duration(milliseconds: 200), () {
         showDialog(
