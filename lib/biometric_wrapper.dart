@@ -58,9 +58,9 @@ class BiometricWrapperState extends State<BiometricWrapper>
     }
   }
 
-  Future<void> triggerAuth() async {
-    if (_isAuthenticated) return;
-    biometricStatus = await biometric.authenticate(
+  Future<BiometricStatus> triggerAuth() async {
+    if (_isAuthenticated) return BiometricStatus.success;
+     biometricStatus = await biometric.authenticate(
       userCredentials: widget.userCredentials,
       biometricOnly: widget.biometricOnly ?? false,
       localizedReason: widget.localizedReason,
@@ -69,7 +69,7 @@ class BiometricWrapperState extends State<BiometricWrapper>
     );
     if (biometricStatus == BiometricStatus.biometricNotActivated &&
         !_dialogShown) {
-      if (!mounted) return;
+      //if (!mounted) return;
       _dialogShown = true;
       Future.delayed(Duration(milliseconds: 200), () {
         showDialog(
@@ -83,6 +83,7 @@ class BiometricWrapperState extends State<BiometricWrapper>
       _isAuthenticated = true;
       print("✅ Authenticated successfully. $biometricStatus");
     }
+    return biometricStatus;
   }
 
   @override
