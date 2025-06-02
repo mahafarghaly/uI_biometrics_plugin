@@ -2,25 +2,31 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 
 class SettingsAlert extends StatelessWidget {
-  const SettingsAlert({super.key});
+  const SettingsAlert({super.key, this.onCancel});
+
+  final VoidCallback? onCancel;
 
   @override
   Widget build(BuildContext context) {
-    return  AlertDialog(
+    return AlertDialog(
       title: Text('Biometric Status'),
       content: Text('Biometric is not activated'),
       actions: [
         TextButton(
           onPressed: () async {
             await AppSettings.openAppSettings(type: AppSettingsType.security);
-            Navigator.pop(context);// to dismiss alert direct after biometric pop up appear
+            Navigator.pop(
+              context,
+            ); // to dismiss alert direct after biometric pop up appear
           },
           child: Text('Open Settings'),
         ),
         TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed:
+              onCancel ??
+              () {
+                Navigator.pop(context);
+              },
           child: Text('Cancel'),
         ),
       ],

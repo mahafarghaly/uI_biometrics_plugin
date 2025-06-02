@@ -10,7 +10,7 @@ class BiometricWrapper extends StatefulWidget {
   final bool? biometricOnly;
   final bool? sensitiveTransaction;
   final bool? stickyAuth;
-
+  final VoidCallback? onCancelSettingsAlert;
   const BiometricWrapper({
     super.key,
     this.triggerManually = false,
@@ -20,6 +20,7 @@ class BiometricWrapper extends StatefulWidget {
     this.biometricOnly,
     this.stickyAuth,
     this.sensitiveTransaction,
+    this.onCancelSettingsAlert,
   });
 
   @override
@@ -74,7 +75,7 @@ class BiometricWrapperState extends State<BiometricWrapper>
       Future.delayed(Duration(milliseconds: 200), () {
         showDialog(
           context: context,
-          builder: (context) => SettingsAlert(),
+          builder: (context) => SettingsAlert(onCancel: widget.onCancelSettingsAlert,),
         ).then((_) {
           _dialogShown = false;
         });
