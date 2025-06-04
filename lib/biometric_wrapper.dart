@@ -11,6 +11,8 @@ class BiometricWrapper extends StatefulWidget {
   final bool? sensitiveTransaction;
   final bool? stickyAuth;
   final VoidCallback? onCancelSettingsAlert;
+  final VoidCallback? onBiometricSuccess;
+  final VoidCallback? onInSettings;
   const BiometricWrapper({
     super.key,
     this.triggerManually = false,
@@ -20,7 +22,7 @@ class BiometricWrapper extends StatefulWidget {
     this.biometricOnly,
     this.stickyAuth,
     this.sensitiveTransaction,
-    this.onCancelSettingsAlert,
+    this.onCancelSettingsAlert, this.onBiometricSuccess, this.onInSettings,
   });
 
   @override
@@ -32,7 +34,7 @@ class BiometricWrapperState extends State<BiometricWrapper>
   final biometric = BiometricAuth();
   bool _isAuthenticated = false;
   bool _dialogShown = false;
-  late BiometricStatus biometricStatus;
+   late BiometricStatus biometricStatus;
 
   @override
   void initState() {
@@ -75,14 +77,18 @@ class BiometricWrapperState extends State<BiometricWrapper>
       Future.delayed(Duration(milliseconds: 200), () {
         showDialog(
           context: context,
-          builder: (context) => SettingsAlert(onCancel: widget.onCancelSettingsAlert,),
+          builder: (context) => SettingsAlert(onCancel: widget.onCancelSettingsAlert,onInSettings: widget.onInSettings,),
         ).then((_) {
           _dialogShown = false;
         });
       });
     } else if (biometricStatus == BiometricStatus.success) {
       _isAuthenticated = true;
-      print("✅ Authenticated successfully. $biometricStatus");
+      if (widget.onBiometricSuccess != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          widget.onBiometricSuccess!();
+        });
+      }
     }
     return biometricStatus;
   }

@@ -2,10 +2,10 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 
 class SettingsAlert extends StatelessWidget {
-  const SettingsAlert({super.key, this.onCancel});
+  const SettingsAlert({super.key, this.onCancel, this.onInSettings});
 
   final VoidCallback? onCancel;
-
+  final VoidCallback? onInSettings;
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -17,7 +17,12 @@ class SettingsAlert extends StatelessWidget {
             await AppSettings.openAppSettings(type: AppSettingsType.security);
             Navigator.pop(
               context,
-            ); // to dismiss alert direct after biometric pop up appear
+            );
+            if(onInSettings!=null){
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                onInSettings!();
+              });
+            }
           },
           child: Text('Open Settings'),
         ),
